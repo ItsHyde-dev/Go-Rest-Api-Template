@@ -17,30 +17,32 @@ import (
 
 func ValidateToken() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		loggedInUsers := database.GetCollection(constants.Mongo["ActiveUsers"])
 
-		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-		headers := new(AuthHeaderSchema)
-
-		if err := c.ReqHeaderParser(headers); err != nil {
+		throw := func(err error) error {
+			fmt.Println("error", err)
 			return c.Status(403).JSON(&fiber.Map{
 				"message": "Invalid access token",
 			})
 		}
 
+		loggedInUsers := database.GetCollection(constants.Mongo["ActiveUsers"])
+		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+		headers := new(AuthHeaderSchema)
+
+		if err := c.ReqHeaderParser(headers); err != nil {
+			return throw(err)
+		}
+
 		if err := utils.Validate(*headers); err != nil {
 			return c.Status(403).JSON(&fiber.Map{
-				"message": "Invalid access token",
+				"message": err,
 			})
 		}
 
 		token := headers.AccessToken
 
 		if doc := loggedInUsers.FindOne(ctx, bson.M{"token": token}); doc.Err() == mongo.ErrNoDocuments {
-			return c.Status(403).JSON(&fiber.Map{
-				"message": "Invalid access token",
-			})
+			return throw(doc.Err())
 		}
 
 		claims := jwt.MapClaims{}
@@ -50,10 +52,7 @@ func ValidateToken() fiber.Handler {
 		})
 
 		if err != nil {
-			fmt.Println("error", err)
-			return c.Status(403).JSON(&fiber.Map{
-				"message": "Invalid access token",
-			})
+			return throw(err)
 		}
 
 		for key, value := range claims {
@@ -61,5 +60,6 @@ func ValidateToken() fiber.Handler {
 		}
 
 		return c.Next()
+
 	}
 }

@@ -21,5 +21,5 @@ type LoginSchema struct {
 }
 
 type AuthHeaderSchema struct {
-	AccessToken string `validate:"required"`
+	AccessToken string `reqHeader:"accesstoken" validate:"required"`
 }
