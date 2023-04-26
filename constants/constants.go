@@ -1,6 +1,6 @@
 package constants
 
-var MONGO_COLLECTIONS = map[string]string{
-	"USERS":           "Users",
-	"LOGGED_IN_USERS": "LoggedInUsers",
+var Mongo = map[string]string{
+	"Users":       "Users",
+	"ActiveUsers": "LoggedInUsers",
 }

@@ -1,12 +1,13 @@
 package users
 
-type CreateSchema struct {
-	Name     string `json:"name" validate:"required"`
-	Email    string `json:"email" validate:"required"`
-	Password string `json:"password" validate:"required"`
+type AllUsersSchema struct {
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required"`
+	Phone string `json:"phone" validate:"required"`
 }
 
-type LoggedIn struct {
-	Token string `json:"token"`
-	Email string `json:"email"`
+type UpdateUserDetailsSchema struct {
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Address string `json:"address"`
 }

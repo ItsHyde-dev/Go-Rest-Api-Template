@@ -1,0 +1,14 @@
+GET http://localhost:3000/user/
+
+
+###
+
+
+post http://localhost:3000/user/details/update
+content-type: application/json
+accesstoken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5kb2VAbWUuY29tIn0.XPTCf8Gl2r6OeBb6rdMjgqbD-qZwSNNQ2KUG_1ci_Ko
+
+{
+    "name": "John Doe 2",
+    "phone": "1234567890"
+}
