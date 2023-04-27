@@ -25,7 +25,7 @@ func ValidateToken() fiber.Handler {
 			})
 		}
 
-		loggedInUsers := database.GetCollection(constants.Mongo["ActiveUsers"])
+		loggedInUsers := database.GetCollection(constants.ActiveUserCollection)
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 		headers := new(AuthHeaderSchema)
 

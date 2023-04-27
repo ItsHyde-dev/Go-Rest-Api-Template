@@ -31,7 +31,7 @@ func Signup() fiber.Handler {
 			})
 		}
 
-		userCollection := database.GetCollection(constants.Mongo["Users"])
+		userCollection := database.GetCollection(constants.UserCollection)
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -68,7 +68,7 @@ func Login() fiber.Handler {
 			})
 		}
 
-		userCollection := database.GetCollection(constants.Mongo["Users"])
+		userCollection := database.GetCollection(constants.UserCollection)
 
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -96,7 +96,7 @@ func Login() fiber.Handler {
 			return c.SendStatus(400)
 		}
 
-		loggedInUsers := database.GetCollection(constants.Mongo["ActiveUsers"])
+		loggedInUsers := database.GetCollection(constants.ActiveUserCollection)
 
 		alreadyLoggedIn := loggedInUsers.FindOne(ctx, bson.D{{"email", req.Email}})
 
@@ -141,7 +141,7 @@ func Logout() fiber.Handler {
 			})
 		}
 
-		loggedInUsers := database.GetCollection(constants.Mongo["ActiveUsers"])
+		loggedInUsers := database.GetCollection(constants.ActiveUserCollection)
 
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 

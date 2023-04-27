@@ -14,7 +14,7 @@ import (
 
 func GetAllUsers() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		userCollection := database.GetCollection(constants.Mongo["Users"])
+		userCollection := database.GetCollection(constants.UserCollection)
 
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -45,7 +45,7 @@ func GetAllUsers() fiber.Handler {
 
 func UpdateUserDetails() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		userCollection := database.GetCollection(constants.Mongo["Users"])
+		userCollection := database.GetCollection(constants.UserCollection)
 
 		body := new(UpdateUserDetailsSchema)
 		if err := c.BodyParser(body); err != nil {
