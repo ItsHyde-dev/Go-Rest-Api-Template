@@ -5,6 +5,8 @@ import (
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/database"
+
+    "os"
 )
 
 var MongoClient mongo.Client
@@ -24,5 +26,9 @@ func main() {
 		return c.SendStatus(404)
 	})
 
-	app.Listen(":8080")
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
+    }
+	app.Listen(port)
 }
