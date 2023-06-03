@@ -34,7 +34,9 @@ func main() {
 
 	if port == "" {
         port = ":8080"
-	}
+	} else {
+        port = ":" + port
+    }
 
 	log.Fatal(app.Listen(port))
 }
