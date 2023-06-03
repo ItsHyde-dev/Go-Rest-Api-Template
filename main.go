@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/database"
-
-    "os"
 )
 
 var MongoClient mongo.Client
@@ -26,9 +28,13 @@ func main() {
 		return c.SendStatus(404)
 	})
 
-    port := os.Getenv("PORT")
-    if port == "" {
-        port = "8080"
-    }
-	app.Listen(port)
+	port := os.Getenv("PORT")
+
+    fmt.Println("listening on " + port)
+
+	if port == "" {
+        port = ":8080"
+	}
+
+	log.Fatal(app.Listen(port))
 }
