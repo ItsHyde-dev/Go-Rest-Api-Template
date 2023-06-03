@@ -6,6 +6,9 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"main.go/database"
@@ -15,6 +18,9 @@ var MongoClient mongo.Client
 
 func main() {
 	app := fiber.New()
+    app.Use(cors.New())
+    app.Use(limiter.New())
+    app.Use(logger.New())
 
 	godotenv.Load()
 
