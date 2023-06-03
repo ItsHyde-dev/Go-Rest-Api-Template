@@ -53,8 +53,6 @@ func Signup() fiber.Handler {
 func Login() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		// logic for login
-
 		req := new(LoginSchema)
 
 		if err := c.BodyParser(req); err != nil {
@@ -70,7 +68,8 @@ func Login() fiber.Handler {
 
 		userCollection := database.GetCollection(constants.UserCollection)
 
-		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+        defer cancel()
 
 		data := userCollection.FindOne(ctx, bson.D{{"email", req.Email}})
 
