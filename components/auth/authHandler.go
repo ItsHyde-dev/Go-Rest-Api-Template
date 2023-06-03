@@ -21,7 +21,7 @@ func Signup() fiber.Handler {
 		userData := new(SignupSchema)
 
 		if err := c.BodyParser(userData); err != nil {
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 		if err := utils.Validate(*userData); err != nil {
@@ -36,7 +36,7 @@ func Signup() fiber.Handler {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.Password), bcrypt.DefaultCost)
 		if err != nil {
 			fmt.Println(err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 		userData.Password = string(hashedPassword)
@@ -44,9 +44,12 @@ func Signup() fiber.Handler {
 		_, err = userCollection.InsertOne(context.TODO(), userData)
 		if err != nil {
 			fmt.Println("error", err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
-		return c.SendStatus(200)
+
+		return c.Status(200).JSON(&fiber.Map{
+            "message": "successfully signed up",
+		})
 	}
 }
 
@@ -57,7 +60,7 @@ func Login() fiber.Handler {
 
 		if err := c.BodyParser(req); err != nil {
 			fmt.Println("error", err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 		if err := utils.Validate(*req); err != nil {
@@ -71,19 +74,30 @@ func Login() fiber.Handler {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
         defer cancel()
 
-		data := userCollection.FindOne(ctx, bson.D{{"email", req.Email}})
+		data := userCollection.FindOne(ctx, bson.M{
+            "email": req.Email,
+        })
+
+        if data.Err() != nil {
+            fmt.Println(data.Err())
+            return c.Status(400).JSON(&fiber.Map{
+                "message": "invalid credentials",
+            })
+        }
 
 		userData := new(LoginSchema)
 
 		if err := data.Decode(userData); err != nil {
 			fmt.Println(err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 		err := bcrypt.CompareHashAndPassword([]byte(userData.Password), []byte(req.Password))
 		if err != nil {
 			fmt.Println(err)
-			return c.SendStatus(400)
+			return c.Status(400).JSON(&fiber.Map{
+                "message": "invalid credentials",
+			})
 		}
 
 		token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -92,12 +106,14 @@ func Login() fiber.Handler {
 
 		if err != nil {
 			fmt.Println(err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 		loggedInUsers := database.GetCollection(constants.ActiveUserCollection)
 
-		alreadyLoggedIn := loggedInUsers.FindOne(ctx, bson.D{{"email", req.Email}})
+		alreadyLoggedIn := loggedInUsers.FindOne(ctx, bson.M{
+            "email": req.Email,
+        })
 
 		if alreadyLoggedIn.Err() != mongo.ErrNoDocuments {
 			loggedInDoc := new(LoggedIn)
@@ -113,7 +129,7 @@ func Login() fiber.Handler {
 
 		if err != nil {
 			fmt.Println(err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 	sendToken:
@@ -131,7 +147,7 @@ func Logout() fiber.Handler {
 
 		if err := c.BodyParser(body); err != nil {
 			fmt.Println("error", err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 		if err := utils.Validate(*body); err != nil {
@@ -148,7 +164,7 @@ func Logout() fiber.Handler {
 
 		if err != nil {
 			fmt.Println(err)
-			return c.SendStatus(400)
+			return c.SendStatus(500)
 		}
 
 		return c.SendStatus(200)
