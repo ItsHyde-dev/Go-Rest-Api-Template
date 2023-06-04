@@ -8,5 +8,5 @@ func AuthRoutes(app fiber.Router) {
 
 	app.Post("/login", Login())
 
-	app.Post("/logout", Logout())
+	app.Post("/logout", ValidateToken(), Logout())
 }

@@ -145,24 +145,14 @@ func Login() fiber.Handler {
 func Logout() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		body := new(LogoutSchema)
-
-		if err := c.BodyParser(body); err != nil {
-			fmt.Println("error", err)
-			return c.SendStatus(500)
-		}
-
-		if err := utils.Validate(*body); err != nil {
-			return c.Status(400).JSON(&fiber.Map{
-				"message": err,
-			})
-		}
-
 		loggedInUsers := database.GetCollection(constants.ActiveUserCollection)
 
-		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+        defer cancel()
 
-		_, err := loggedInUsers.DeleteMany(ctx, bson.M{"email": body.Email})
+        email := c.Locals("email")
+
+        _, err := loggedInUsers.DeleteMany(ctx, bson.M{"email": email})
 
 		if err != nil {
 			fmt.Println(err)
