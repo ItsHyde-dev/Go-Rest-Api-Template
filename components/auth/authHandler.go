@@ -135,7 +135,9 @@ func Login() fiber.Handler {
 	sendToken:
 		return c.Status(200).JSON(&fiber.Map{
 			"message":     "successfully logged in",
-			"accessToken": token,
+			"data": &fiber.Map{
+                "accessToken": token,
+            },
 		})
 	}
 }
