@@ -159,6 +159,9 @@ func Logout() fiber.Handler {
 			return c.SendStatus(500)
 		}
 
-		return c.SendStatus(200)
+		return c.Status(200).JSON(&fiber.Map{
+            "message": "successfully logged out",
+            "data": "",
+        })
 	}
 }
