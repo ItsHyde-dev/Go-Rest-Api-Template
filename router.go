@@ -7,6 +7,15 @@ import (
 )
 
 func Router(app fiber.Router) {
+
+    app.Get("/", func(c *fiber.Ctx) error {
+        return c.SendStatus(200)
+    })
+
+    app.Post("/", func(c *fiber.Ctx) error {
+        return c.SendStatus(200)
+    })
+
 	users.UserRoutes(app.Group("user"))
 	auth.AuthRoutes(app.Group("auth"))
 }
